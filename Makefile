@@ -7,10 +7,17 @@ BINARY_NAME=githelper
 BUILD_DIR=bin
 
 # Go build flags
-BUILD_FLAGS=-v
+BUILD_FLAGS=-v -ldflags "-X github.com/EndlessUphill/git-helper/internal/version.Version=${VERSION} \
+                        -X github.com/EndlessUphill/git-helper/internal/version.CommitHash=${COMMIT_HASH} \
+                        -X github.com/EndlessUphill/git-helper/internal/version.BuildDate=${BUILD_DATE}"
 
 # Installation directory (usually in PATH)
 INSTALL_DIR=$(HOME)/.local/bin
+
+# Add these variables at the top
+VERSION=$(shell git describe --tags --always --dirty)
+COMMIT_HASH=$(shell git rev-parse --short HEAD)
+BUILD_DATE=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
 
 build:
 	@echo "Building $(BINARY_NAME)..."
