@@ -10,6 +10,7 @@ type Config struct {
 	GithubToken string `mapstructure:"github_token"`
 	DefaultOrg  string `mapstructure:"default_org"`
 	Debug       bool   `mapstructure:"debug"`
+	OpenAIAPIKey string `mapstructure:"openai_api_key"`
 }
 
 func LoadConfig(cfgFile string) (*Config, error) {

@@ -7,12 +7,15 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/EndlessUphill/git-helper/internal/ai"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
-	skipEdit bool
-	commitType string
+	skipEdit    bool
+	commitType  string
+	useAI      bool
 )
 
 var commitCmd = &cobra.Command{
@@ -31,6 +34,7 @@ func init() {
 	flags := commitCmd.Flags()
 	flags.BoolVarP(&skipEdit, "no-edit", "n", false, "skip editing the generated message")
 	flags.StringVarP(&commitType, "type", "t", "", "commit type (feat, fix, docs, etc.)")
+	flags.BoolVarP(&useAI, "ai", "a", false, "use AI to generate commit message")
 }
 
 func runCommit(cmd *cobra.Command, args []string) error {
@@ -84,51 +88,84 @@ func getStagedChangesSummary() (string, error) {
 	return string(output), nil
 }
 
+func getDetailedDiff() (string, error) {
+	cmd := exec.Command("git", "diff", "--cached")
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to get detailed diff: %w", err)
+	}
+	return string(output), nil
+}
+
 func generateCommitMessage(summary string) (string, error) {
 	var message strings.Builder
 
-	// If commit type not provided, prompt for it
-	if commitType == "" {
-		fmt.Println("Available commit types:")
-		fmt.Println("1. feat     - A new feature")
-		fmt.Println("2. fix      - A bug fix")
-		fmt.Println("3. docs     - Documentation only changes")
-		fmt.Println("4. style    - Changes that don't affect the meaning of the code")
-		fmt.Println("5. refactor - Code change that neither fixes a bug nor adds a feature")
-		fmt.Println("6. test     - Adding missing tests or correcting existing tests")
-		fmt.Println("7. chore    - Changes to the build process or auxiliary tools")
-		
-		fmt.Print("\nEnter commit type (or number): ")
-		var input string
-		fmt.Scanln(&input)
-
-		// Handle numeric input
-		switch input {
-		case "1":
-			commitType = "feat"
-		case "2":
-			commitType = "fix"
-		case "3":
-			commitType = "docs"
-		case "4":
-			commitType = "style"
-		case "5":
-			commitType = "refactor"
-		case "6":
-			commitType = "test"
-		case "7":
-			commitType = "chore"
-		default:
-			commitType = input
+	if useAI {
+		// Get detailed diff for AI
+		diff, err := getDetailedDiff()
+		if err != nil {
+			return "", err
 		}
-	}
 
-	message.WriteString(fmt.Sprintf("%s: ", commitType))
+		// Get OpenAI API key
+		apiKey := viper.GetString("openai_api_key")
+		if apiKey == "" {
+			return "", fmt.Errorf("OpenAI API key not found in config")
+		}
+
+		// Generate commit message using AI
+		generator := ai.NewCommitGenerator(apiKey)
+		aiMessage, err := generator.GenerateCommitMessage(diff)
+		if err != nil {
+			return "", err
+		}
+
+		message.WriteString(aiMessage)
+	} else {
+		// Original manual commit message generation
+		if commitType == "" {
+			fmt.Println("Available commit types:")
+			fmt.Println("1. feat     - A new feature")
+			fmt.Println("2. fix      - A bug fix")
+			fmt.Println("3. docs     - Documentation only changes")
+			fmt.Println("4. style    - Changes that don't affect the meaning of the code")
+			fmt.Println("5. refactor - Code change that neither fixes a bug nor adds a feature")
+			fmt.Println("6. test     - Adding missing tests or correcting existing tests")
+			fmt.Println("7. chore    - Changes to the build process or auxiliary tools")
+			
+			fmt.Print("\nEnter commit type (or number): ")
+			var input string
+			fmt.Scanln(&input)
+
+			// Handle numeric input
+			switch input {
+			case "1":
+				commitType = "feat"
+			case "2":
+				commitType = "fix"
+			case "3":
+				commitType = "docs"
+			case "4":
+				commitType = "style"
+			case "5":
+				commitType = "refactor"
+			case "6":
+				commitType = "test"
+			case "7":
+				commitType = "chore"
+			default:
+				commitType = input
+			}
+		}
+		message.WriteString(fmt.Sprintf("%s: ", commitType))
+	}
 
 	// Add summary of changes
 	message.WriteString("\n\n# Changes to be committed:\n")
 	message.WriteString(fmt.Sprintf("# %s\n", summary))
-	message.WriteString("\n# Write a brief description above\n")
+	if useAI {
+		message.WriteString("\n# AI-generated commit message above\n")
+	}
 	message.WriteString("# Lines starting with '#' will be ignored\n")
 
 	return message.String(), nil

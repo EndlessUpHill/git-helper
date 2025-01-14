@@ -89,6 +89,7 @@ func initConfig() {
 	if debug {
 		fmt.Printf("Using config file: %s\n", viper.ConfigFileUsed())
 		fmt.Printf("GitHub token present: %v\n", viper.GetString("github_token") != "")
+		fmt.Printf("OpenAI API key present: %v\n", viper.GetString("openai_api_key") != "")
 		fmt.Printf("Config values: %+v\n", viper.AllSettings())
 	}
 
