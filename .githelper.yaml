@@ -1,4 +1,0 @@
-# Default configuration file
-github_token: "" # Set your GitHub token here or use GITHELPER_GITHUB_TOKEN env var
-default_org: ""  # Default GitHub organization
-debug: false     # Enable debug logging 

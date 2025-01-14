@@ -1,0 +1,99 @@
+
+1. Project Overview:
+   - This CLI application should simplify complex GitHub workflows that are not straightforward with basic Git commands.
+   - The tool must be user-friendly, robust, and handle edge cases gracefully.
+   - Commands should follow the format: <tool-name> <command> [flags].
+
+2. Supported Workflows:
+   - Copy a repository (with full branch and tag history):
+     - Use `git clone --mirror` to create a bare copy of the repository.
+     - Push the mirrored repository to a new remote using `git push --mirror`.
+   - Bulk rename branches across multiple repositories:
+     - Allow users to rename a branch in one or more repositories.
+     - Ensure backward compatibility by creating an alias for the old branch name if required.
+   - Archive a repository:
+     - Clone a repository with full history.
+     - Compress it into a `.zip` or `.tar.gz` archive.
+     - Optionally encrypt the archive for security.
+   - Sync forks with upstream:
+     - Fetch updates from the upstream repository.
+     - Merge or rebase changes into the fork's default branch.
+   - Automate pull request creation:
+     - Automatically create a pull request from one branch to another with a customizable message.
+     - Add reviewers and labels using GitHub’s API.
+   - Bulk update repository settings:
+     - Configure repository settings such as branch protection rules, topics, and descriptions via GitHub’s API.
+   - Find and delete stale branches:
+     - Identify branches that have not been updated for a configurable period.
+     - Provide an option to delete them after confirmation.
+   - Generate a commit comment:
+     - Analyze the changes in the working directory or staged files.
+     - Suggest a well-structured commit message based on the type of changes:
+       - Use prefixes like `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:` for conventional commits.
+       - Summarize changes in a concise sentence.
+       - Provide a detailed description of significant changes in the commit body.
+     - Allow users to preview and edit the suggested message before committing.
+
+3. Configuration:
+   - Support configuration files in YAML or JSON format for storing common options (e.g., GitHub tokens, default settings).
+   - Allow users to override configurations via command-line flags.
+
+4. CLI Framework:
+   - Use the `cobra` library to structure commands and subcommands.
+   - Provide auto-generated usage documentation for each command.
+
+5. Dependencies:
+   - Use `github.com/google/go-github/v53/github` for GitHub API interactions.
+   - Use `os/exec` to run Git commands when needed.
+
+6. User Experience:
+   - Provide detailed error messages and suggestions for resolving errors.
+   - Include progress bars or spinners for long-running operations.
+   - Allow dry-run mode for previewing changes without making actual modifications.
+   - Add verbose logging to help users debug issues.
+
+7. Code Quality:
+   - Follow Go best practices for idiomatic code.
+   - Ensure proper error handling and context propagation using `errors` and `fmt.Errorf`.
+
+8. Testing:
+   - Write unit tests for core logic.
+   - Add integration tests to validate GitHub API interactions using mock servers like `gock`.
+   - Include end-to-end tests for critical workflows.
+
+9. Logging and Debugging:
+   - Use `zerolog` for structured logging.
+   - Provide a `--debug` flag to enable verbose logs.
+
+10. Documentation:
+    - Auto-generate command-line help text using the CLI framework.
+    - Create example use cases for each command in a `docs/` folder.
+
+11. Useful Recipes:
+    - Clone all repositories from a GitHub organization or user:
+      - Use the GitHub API to list all repositories.
+      - Clone them into a specified directory.
+    - Transfer a repository to another user or organization:
+      - Use the GitHub API to initiate a repository transfer.
+      - Provide options for maintaining collaborators and permissions.
+    - Find large files in a repository:
+      - Use `git rev-list` and `git cat-file` to identify large objects.
+    - Automatically resolve merge conflicts:
+      - Use pre-defined conflict resolution strategies (e.g., "ours" or "theirs").
+    - Automate release creation:
+      - Create a GitHub release with changelog generation and asset uploads.
+
+12. Security:
+    - Store sensitive data (e.g., GitHub tokens) securely in environment variables or a local keychain.
+    - Warn users about potential risks, such as pushing sensitive data to public repositories.
+
+13. Build and Distribution:
+    - Use `Makefile` with targets for `build`, `test`, `lint`, and `release`.
+    - Provide pre-compiled binaries for major platforms (Linux, macOS, Windows) using `goreleaser`.
+
+14. Error Handling:
+    - Catch common Git errors (e.g., authentication failures, branch conflicts) and provide actionable feedback.
+
+15. Versioning:
+    - Include a `--version` flag with build details (e.g., commit hash and build date).
+

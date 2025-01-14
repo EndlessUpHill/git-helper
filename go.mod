@@ -4,10 +4,21 @@ go 1.24rc1
 
 require github.com/spf13/viper v1.19.0
 
-require github.com/inconshreveable/mousetrap v1.1.0 // indirect
+require (
+	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
+	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/oauth2 v0.18.0 // indirect
+	google.golang.org/appengine v1.6.8 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/google/go-github/v53 v53.2.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
