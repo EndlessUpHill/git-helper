@@ -1,16 +1,31 @@
-.PHONY: build test clean
+.PHONY: build install clean test
 
+# Binary name
 BINARY_NAME=githelper
-VERSION=$(shell git describe --tags --always --dirty)
-COMMIT_HASH=$(shell git rev-parse --short HEAD)
-BUILD_DATE=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
-LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.CommitHash=${COMMIT_HASH} -X main.BuildDate=${BUILD_DATE}"
+
+# Build directory
+BUILD_DIR=bin
+
+# Go build flags
+BUILD_FLAGS=-v
+
+# Installation directory (usually in PATH)
+INSTALL_DIR=$(HOME)/.local/bin
 
 build:
-	go build ${LDFLAGS} -o bin/${BINARY_NAME}
+	@echo "Building $(BINARY_NAME)..."
+	@mkdir -p $(BUILD_DIR)
+	@go build $(BUILD_FLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)
 
-test:
-	go test -v ./...
+install: build
+	@echo "Installing $(BINARY_NAME) to $(INSTALL_DIR)..."
+	@mkdir -p $(INSTALL_DIR)
+	@cp $(BUILD_DIR)/$(BINARY_NAME) $(INSTALL_DIR)
+	@echo "Installation complete. Make sure $(INSTALL_DIR) is in your PATH"
 
 clean:
-	rm -rf bin/ 
+	@echo "Cleaning..."
+	@rm -rf $(BUILD_DIR)
+
+test:
+	@go test ./... -v 
