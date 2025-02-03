@@ -15,7 +15,6 @@ import (
 var (
 	skipEdit    bool
 	commitType  string
-	useAI      bool
 )
 
 var commitCmd = &cobra.Command{

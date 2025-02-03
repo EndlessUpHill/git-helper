@@ -16,7 +16,6 @@ import (
 var (
 	destination string
 	isOrg       bool
-	dryRun      bool
 	repoConfig  github.RepoConfig
 )
 
