@@ -1,6 +1,4 @@
-I'll help create comprehensive documentation for all the commands in a new `doc` folder.
 
-```go:doc/commands.md
 # Git Helper Commands
 
 A collection of helpful Git commands to streamline your workflow.
