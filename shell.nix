@@ -3,8 +3,10 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     go
-    gcc11
+    gcc12
     git
+    gnumake
+    pkg-config
   ];
 
   shellHook = ''
